@@ -3,13 +3,13 @@ CUDA_brute_triangle
 
 brute force examines all n choose k triangles
 
-This code goes through every possible 3 point combination of a set of points, makes a triangle of those three point, then evalutes how many other points are within that triangle. 
+This code goes through every possible 3 point combination of a set of points, makes a triangle of those three points, then evalutes how many other points are within that triangle. 
 
 The in this simple example case, the objective is to find which triangle of the possible set which contains within the greatest number of other points. The two different CPU and GPU functions then return that max number of points, and the INDEXES of the three points which created that optimal triangle.
 
 While many CUDA GPU implementations of algorithms many only be 10-100 times faster than a single core CPU implementation, this problem has a much greater difference in performance.
 
-The larger the data set of points, the greater the outperformance of the GPU. For data sets of points >=400 the GPU CUDA implementation was at least 1000x times faster than a 3.9 GHz CPU implementation(including all host-device, device-device and device-host memory copies).
+The larger the data set of points, the greater the outperformance of the GPU. For data sets of points >=400 the GPU CUDA implementation was at least 1000x times faster than a 3.9 GHz CPU implementation(including all host-device, device-device and device-host memory copies). 
 
 Python,Ruby, Java or C# fans, please post your times for the equivalent task. I fail to see why anybody uses such slow verbose languages, but you are welcome to prove me wrong(but prove with code and examples).
 
@@ -34,6 +34,8 @@ ___
 The running time is apx (N choose 3)*N, where N is the number of 2-D points in the array. 
 
 What makes this even more impressive is that the GPU actually has to do over 10x more work for the same answer (this is apparent in code, compare CPU version to GPU).
+
+Note: Must have compute capability of 3.0 or higher to run(GTX 660 or better).
 
 AMD users, post your times and code. I would like to compare results.
 
