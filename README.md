@@ -47,3 +47,6 @@ AMD users, post your times and code. I would like to compare results.
   ga('send', 'pageview');
 
 </script>
+
+[![githalytics.com alpha](https://cruel-carlota.pagodabox.com/8024c83bd0328155085f6a67bc179d04 "githalytics.com")](http://githalytics.com/OlegKonings/CUDA_brute_triangle)
+
