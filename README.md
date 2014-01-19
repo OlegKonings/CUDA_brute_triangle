@@ -3,6 +3,8 @@ CUDA_brute_triangle
 
 brute force examines all n choose k triangles
 
+Здравствуйте в Омск!
+
 This code goes through every possible 3 point combination of a set of points, makes a triangle of those three points, then evalutes how many other points are within that triangle. 
 
 In this simple example case, the objective is to find which triangle of the possible set contains within the greatest number of other points. The two different CPU and GPU functions return that max number of points, and the INDEXES of the three points which created that optimal triangle.
