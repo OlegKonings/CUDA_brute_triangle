@@ -13,7 +13,7 @@ While many CUDA GPU implementations of algorithms many only be 10-100 times fast
 
 The larger the data set of points, the greater the outperformance of the CUDA GPU implementation. For data sets of points >=400 the GPU CUDA implementation was at least 1000x times faster than a 3.9 GHz CPU implementation(including all host-device, device-device and device-host memory copies). 
 
-Python,Ruby, Java or C# fans, please post your times for the equivalent task. I fail to see why anybody uses such slow verbose languages, but you are welcome to prove me wrong(but prove with code and examples).
+NOTE: no overlocking of GPU, is running at stock 700 Mhz
 
 Optimal Triangle Running Time comparison:
 ---
