@@ -1,7 +1,7 @@
 CUDA_brute_triangle
 ===================
 
-brute force examines all n choose 3 triangles
+brute force examines all possible n choose 3 triangles only once
 
 
 This code goes through every possible 3 point combination of a set of points, makes a triangle of those three points, then evalutes how many other points are within that triangle. 
