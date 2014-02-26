@@ -33,6 +33,9 @@ Optimal Triangle Running Time comparison:
 <tr>
     <td> 700</td><td> 411,401 ms</td><td> 912 ms </td><td> 451.01x </td>
 </tr>
+<tr>
+    <td> 1300</td><td> 5,075,524 ms</td><td> 10,788 ms </td><td> 470.47x </td>
+</tr>
 </table>
 ___
 
