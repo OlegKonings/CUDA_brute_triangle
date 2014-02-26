@@ -29,7 +29,7 @@ typedef long long ll;
 
 #define THREADS 256
 #define NUM_ELEMENTS 500
-#define MEGA (1LL<<30)
+#define MEGA (1LL<<29)
 
 const int max_x=NUM_ELEMENTS;
 const int max_y=NUM_ELEMENTS;
@@ -69,16 +69,18 @@ inline long long choose3_big(int n){
 	long long nn=long long(n);
 	return ((((nn*(nn-1LL))>>1LL)*(nn-2LL))/3LL);
 }
+	//long long nn=long long(n);
+	//return ((((nn*(nn-1LL))>>1LL)*(nn-2LL))/3LL);
+__device__ __forceinline__ int d_choose2(int n){return n>0 ? ((n*(n-1))>>1):0;}
 
-__device__ int d_choose2(int n){return n>0 ? ((n*(n-1))>>1):0;}
-
-__device__ long long d_choose3_big(int n){
-	long long nn=long long(n);
-	return ((((nn*(nn-1LL))>>1LL)*(nn-2LL))/3LL);
+__device__ __forceinline__ long long d_choose3_big(int n){
+	return ((((long long(n)*(long long(n)-1LL))>>1LL)*(long long(n)-2LL))/3LL);
 }
 
+__constant__ float2 Pnt_Arr[NUM_ELEMENTS+1];//careful here, __constant__ memory has a 65536 byte limit. 
+
 template<int blockWork>
-__global__ void _gpu_optimal_three(const float2* __restrict__ Arr,int3* __restrict__ combo,int* __restrict__ best_num,const int sz){
+__global__ void _gpu_optimal_three(int3 *combo,int *best_num,const int sz){
 
 	const long long offset=long long(threadIdx.x)+long long(blockIdx.x)*long long(blockWork);
 	const int reps=blockWork>>8;
@@ -121,10 +123,10 @@ __global__ void _gpu_optimal_three(const float2* __restrict__ Arr,int3* __restri
 		j=lo;
 		k=int(pos);
 		// now have idx i,j,k
-		p1=Arr[i];p2=Arr[j];p3=Arr[k];
+		p1=Pnt_Arr[i];p2=Pnt_Arr[j];p3=Pnt_Arr[k];
 		lo=0;
 		for(mid=0;mid<sz;mid++)if(mid!=i && mid!=j && mid!=k){
-			p=Arr[mid];
+			p=Pnt_Arr[mid];
 			alpha = ((p2.y - p3.y)*(p.x - p3.x) + (p3.x - p2.x)*(p.y - p3.y)) /((p2.y - p3.y)*(p1.x - p3.x) + (p3.x - p2.x)*(p1.y - p3.y));
 			beta = ((p3.y - p1.y)*(p.x - p3.x) + (p1.x - p3.x)*(p.y - p3.y)) /((p2.y - p3.y)*(p1.x - p3.x) + (p3.x - p2.x)*(p1.y - p3.y));
 			if(alpha>=0.0f && beta>=0.0f && (1.0f - alpha - beta)>=0.0f )lo++;
@@ -149,7 +151,7 @@ __global__ void _gpu_optimal_three(const float2* __restrict__ Arr,int3* __restri
 			cur_best.z=k;
 		}
 	}
-	if(threadIdx.x%32==0){
+	if(warpIndex==0){
 		blk_best[threadIdx.x>>5]=thread_best;
 		combo_best[threadIdx.x>>5]=cur_best;
 	}
@@ -193,8 +195,7 @@ __global__ void _gpu_optimal_three(const float2* __restrict__ Arr,int3* __restri
 	}
 }
 
-__global__ void tri_last_step(const float2* __restrict__ Arr,int3* __restrict__ combo,int* __restrict__ best_num,
-	const int sz, const long long rem_start,const long long bound,const int num_blox){
+__global__ void tri_last_step(int3 *combo,int *best_num,const int sz, const long long rem_start,const long long bound,const int num_blox){
 
 	const long long offset=long long(threadIdx.x)+rem_start;
 	const int warpIndex = threadIdx.x%32;
@@ -234,10 +235,10 @@ __global__ void tri_last_step(const float2* __restrict__ Arr,int3* __restrict__ 
 		j=lo;
 		k=int(pos);
 		// now have idx i,j,k
-		p1=Arr[i];p2=Arr[j];p3=Arr[k];
+		p1=Pnt_Arr[i];p2=Pnt_Arr[j];p3=Pnt_Arr[k];
 		lo=0;
 		for(mid=0;mid<sz;mid++)if(mid!=i && mid!=j && mid!=k){
-			p=Arr[mid];
+			p=Pnt_Arr[mid];
 			alpha = ((p2.y - p3.y)*(p.x - p3.x) + (p3.x - p2.x)*(p.y - p3.y)) /((p2.y - p3.y)*(p1.x - p3.x) + (p3.x - p2.x)*(p1.y - p3.y));
 			beta = ((p3.y - p1.y)*(p.x - p3.x) + (p1.x - p3.x)*(p.y - p3.y)) /((p2.y - p3.y)*(p1.x - p3.x) + (p3.x - p2.x)*(p1.y - p3.y));
 			if(alpha>=0.0f && beta>=0.0f && (1.0f - alpha - beta)>=0.0f )lo++;
@@ -274,7 +275,7 @@ __global__ void tri_last_step(const float2* __restrict__ Arr,int3* __restrict__ 
 		}
 	}
 
-	if(threadIdx.x%32==0){
+	if(warpIndex==0){
 		blk_best[threadIdx.x>>5]=thread_best;
 		combo_best[threadIdx.x>>5]=cur_best;
 	}
@@ -330,7 +331,8 @@ int main(){
 	generate_random_points(CPU_Arr,num_points,max_x);
 		
 	three_p CPU_ans={0},GPU_ans={0};
-
+	cudaError_t err=cudaDeviceReset();
+	if(err!=cudaSuccess){printf("%s in %s at line %d\n",cudaGetErrorString(err),__FILE__,__LINE__);}
 	cout<<"\nRunning CPU implementation..\n";
     UINT wTimerRes = 0;
 	DWORD CPU_time=0,GPU_time=0;
@@ -347,7 +349,7 @@ int main(){
 
     DestroyMMTimer(wTimerRes, init);
 
-	cudaError_t err=cudaDeviceReset();
+	err=cudaMemcpyToSymbol(Pnt_Arr,CPU_Arr,num_bytes_arr);
 	if(err!=cudaSuccess){printf("%s in %s at line %d\n",cudaGetErrorString(err),__FILE__,__LINE__);}
 
 	
@@ -356,12 +358,12 @@ int main(){
 	const int num_blx=int(range/long long(temp_blocks_sz));
 	const long long rem_start=range-(range-long long(num_blx)*long long(temp_blocks_sz));
 
-	float2 *GPU_Arr;
+	//float2 *GPU_Arr;
 	int *GPU_best;
 	int3 *GPU_combo;
 
-	err=cudaMalloc((void**)&GPU_Arr,num_bytes_arr);
-	if(err!=cudaSuccess){printf("%s in %s at line %d\n",cudaGetErrorString(err),__FILE__,__LINE__);}
+	//err=cudaMalloc((void**)&GPU_Arr,num_bytes_arr);
+	//if(err!=cudaSuccess){printf("%s in %s at line %d\n",cudaGetErrorString(err),__FILE__,__LINE__);}
 	err=cudaMalloc((void**)&GPU_best,num_blx*sizeof(int));
 	if(err!=cudaSuccess){printf("%s in %s at line %d\n",cudaGetErrorString(err),__FILE__,__LINE__);}
 	err=cudaMalloc((void**)&GPU_combo,num_blx*sizeof(int3));
@@ -371,24 +373,24 @@ int main(){
     init = InitMMTimer(wTimerRes);
     startTime = timeGetTime();
 
-	err=cudaMemcpy(GPU_Arr,CPU_Arr,num_bytes_arr,_HTD);
-	if(err!=cudaSuccess){printf("%s in %s at line %d\n",cudaGetErrorString(err),__FILE__,__LINE__);}
+	//err=cudaMemcpy(GPU_Arr,CPU_Arr,num_bytes_arr,_HTD);
+	//if(err!=cudaSuccess){printf("%s in %s at line %d\n",cudaGetErrorString(err),__FILE__,__LINE__);}
 
 	if(adj_size==1){
-		_gpu_optimal_three<blockSize0><<<num_blx,THREADS>>>(GPU_Arr,GPU_combo,GPU_best,num_points);			
+		_gpu_optimal_three<blockSize0><<<num_blx,THREADS>>>(GPU_combo,GPU_best,num_points);			
 	}else if(adj_size==2){
-		_gpu_optimal_three<blockSize0*2><<<num_blx,THREADS>>>(GPU_Arr,GPU_combo,GPU_best,num_points);
+		_gpu_optimal_three<blockSize0*2><<<num_blx,THREADS>>>(GPU_combo,GPU_best,num_points);
 	}else if(adj_size==3){
-		_gpu_optimal_three<blockSize0*4><<<num_blx,THREADS>>>(GPU_Arr,GPU_combo,GPU_best,num_points);
+		_gpu_optimal_three<blockSize0*4><<<num_blx,THREADS>>>(GPU_combo,GPU_best,num_points);
 	}else if(adj_size==4){
-		_gpu_optimal_three<blockSize0*8><<<num_blx,THREADS>>>(GPU_Arr,GPU_combo,GPU_best,num_points);
+		_gpu_optimal_three<blockSize0*8><<<num_blx,THREADS>>>(GPU_combo,GPU_best,num_points);
 	}else{
-		_gpu_optimal_three<blockSize0*16><<<num_blx,THREADS>>>(GPU_Arr,GPU_combo,GPU_best,num_points);
+		_gpu_optimal_three<blockSize0*16><<<num_blx,THREADS>>>(GPU_combo,GPU_best,num_points);
 	}
 	err = cudaThreadSynchronize();
 	if(err!=cudaSuccess){printf("%s in %s at line %d\n",cudaGetErrorString(err),__FILE__,__LINE__);}
 
-	tri_last_step<<<1,THREADS>>>(GPU_Arr,GPU_combo,GPU_best,num_points,rem_start,range,num_blx);
+	tri_last_step<<<1,THREADS>>>(GPU_combo,GPU_best,num_points,rem_start,range,num_blx);
 	err = cudaThreadSynchronize();
 	if(err!=cudaSuccess){printf("%s in %s at line %d\n",cudaGetErrorString(err),__FILE__,__LINE__);}
 
@@ -402,8 +404,7 @@ int main(){
     GPU_time=endTime-startTime;
 	DestroyMMTimer(wTimerRes, init);
 
-	err=cudaFree(GPU_Arr);
-	if(err!=cudaSuccess){printf("%s in %s at line %d\n",cudaGetErrorString(err),__FILE__,__LINE__);}
+	
 	err=cudaFree(GPU_best);
 	if(err!=cudaSuccess){printf("%s in %s at line %d\n",cudaGetErrorString(err),__FILE__,__LINE__);}
 	err=cudaFree(GPU_combo);
@@ -411,16 +412,16 @@ int main(){
 
 	cout<<"CUDA timing: "<<GPU_time<<'\n';
 	cout<<"GPU best value= "<<GPU_ans.num<<" , point indexes ( "<<GPU_ans.a.x<<" , "<<GPU_ans.a.y<<" , "<<GPU_ans.a.z<<" ).\n";
-
+	cout<<"\nNote: If there is more than one triangle which has the same optimal value, the GPU version will return a valid triangle, but not necessarily the first encountered.\n";
 	if(GPU_ans.num==CPU_ans.num){
-		cout<<"\nSuccess. GPU results match CPU results!. GPU was "<<double(CPU_time)/double(GPU_time)<<" faster that 3.9 ghz CPU.\n";
+		cout<<"\nSuccess. GPU value matches CPU results!. GPU was "<<double(CPU_time)/double(GPU_time)<<" faster that 3.9 ghz CPU.\n";
 	}else{
 		cout<<"\nError in calculation!\n";
 	}
 
 
 	free(CPU_Arr);
-	cin>>ch;
+	//cin>>ch;
 	return 0;
 }
 
@@ -494,6 +495,3 @@ three_p CPU_version(const float2 *Arr, const int sz){
 
 	return ret;
 }
-
-
-
