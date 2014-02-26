@@ -3,6 +3,7 @@ CUDA_brute_triangle
 
 brute force examines all possible n choose 3 triangles only once
 
+UPDATE: Optimized both implementations, so new times posted.
 
 This code goes through every possible 3 point combination of a set of points, makes a triangle of those three points, then evalutes how many other points are within that triangle. 
 
@@ -10,7 +11,7 @@ In this simple example case, the objective is to find which triangle of the poss
 
 While many CUDA GPU implementations of algorithms many only be 10-100 times faster than a single core CPU implementation, this problem has a much greater difference in performance.
 
-The larger the data set of points, the greater the outperformance of the CUDA GPU implementation. For data sets of points >=400 the GPU CUDA implementation was at least 1000x times faster than a 3.9 Ghz CPU implementation(including all host-device, device-device and device-host memory copies). 
+The larger the data set of points, the greater the outperformance of the CUDA GPU implementation. For data sets of points >=400 the GPU CUDA implementation was at least 400x times faster than a 3.9 Ghz CPU implementation(including all host-device, device-device and device-host memory copies). 
 
 NOTE: no overlocking of GPU, is running at stock 706 Mhz
 
@@ -21,19 +22,16 @@ Optimal Triangle Running Time comparison:
     <th>Number of points</th><th>Intel I-3770K 3.9 Ghz CPU time </th><th>Tesla K20c GPU time </th><th> CUDA Speedup</th>
 </tr>
     <tr>
-    <td> 300</td><td> 35,964 ms </td><td> 36 ms </td><td> 999x</td>
+    <td> 300</td><td> 13,198 ms </td><td> 32 ms </td><td> 412.438x</td>
   </tr
   <tr>
-    <td> 400</td><td> 114,359 ms </td><td> 110 ms </td><td> 1039.63x </td>
+    <td> 400</td><td> 42,710 ms </td><td> 99 ms </td><td> 431.32x </td>
 </tr>
 <tr>
-    <td> 500</td><td> 281,730 ms</td><td> 240 ms </td><td> 1173.875x </td>
+    <td> 500</td><td> 103,731 ms</td><td> 240 ms </td><td> 432.2x </td>
 </tr>
 <tr>
-    <td> 700</td><td> 1,095,055 ms</td><td> 998 ms </td><td> 1097.24x </td>
-</tr>
-<tr>
-    <td> 1300</td><td> 13,169,820 ms</td><td> 11672 ms </td><td> 1128.32x </td>
+    <td> 700</td><td> 411,401 ms</td><td> 912 ms </td><td> 451.01x </td>
 </tr>
 </table>
 ___
