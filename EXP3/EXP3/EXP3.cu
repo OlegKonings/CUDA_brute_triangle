@@ -29,12 +29,12 @@ typedef long long ll;
 
 #define THREADS 256
 #define NUM_ELEMENTS 500
-#define MEGA (1LL<<29)
+#define MEGA (1LL<<30)
 
 const int max_x=NUM_ELEMENTS;
-const int max_y=NUM_ELEMENTS;
+//const int max_y=NUM_ELEMENTS;
 
-const int blockSize0=2048;
+const int blockSize0=8192;
 
 struct three_p{
 	int3 a;
@@ -333,20 +333,20 @@ int main(){
 	three_p CPU_ans={0},GPU_ans={0};
 	cudaError_t err;
 	cout<<"\nRunning CPU implementation..\n";
-    UINT wTimerRes = 0;
+    	UINT wTimerRes = 0;
 	DWORD CPU_time=0,GPU_time=0;
-    bool init = InitMMTimer(wTimerRes);
-    DWORD startTime=timeGetTime();
+    	bool init = InitMMTimer(wTimerRes);
+    	DWORD startTime=timeGetTime();
 
 	CPU_ans=CPU_version(CPU_Arr,num_points);
 
 	DWORD endTime = timeGetTime();
-    CPU_time=endTime-startTime;
+    	CPU_time=endTime-startTime;
 
-    cout<<"CPU solution timing: "<<CPU_time<<'\n';
+    	cout<<"CPU solution timing: "<<CPU_time<<'\n';
 	cout<<"CPU best value= "<<CPU_ans.num<<" , point indexes ( "<<CPU_ans.a.x<<" , "<<CPU_ans.a.y<<" , "<<CPU_ans.a.z<<" ).\n";
 
-    DestroyMMTimer(wTimerRes, init);
+    	DestroyMMTimer(wTimerRes, init);
 
 	err=cudaMemcpyToSymbol(Pnt_Arr,CPU_Arr,num_bytes_arr);
 	if(err!=cudaSuccess){printf("%s in %s at line %d\n",cudaGetErrorString(err),__FILE__,__LINE__);}
@@ -369,8 +369,8 @@ int main(){
 	if(err!=cudaSuccess){printf("%s in %s at line %d\n",cudaGetErrorString(err),__FILE__,__LINE__);}
 
 	wTimerRes = 0;
-    init = InitMMTimer(wTimerRes);
-    startTime = timeGetTime();
+    	init = InitMMTimer(wTimerRes);
+    	startTime = timeGetTime();
 
 	//err=cudaMemcpy(GPU_Arr,CPU_Arr,num_bytes_arr,_HTD);
 	//if(err!=cudaSuccess){printf("%s in %s at line %d\n",cudaGetErrorString(err),__FILE__,__LINE__);}
@@ -400,7 +400,7 @@ int main(){
 	if(err!=cudaSuccess){printf("%s in %s at line %d\n",cudaGetErrorString(err),__FILE__,__LINE__);}
 
 	endTime = timeGetTime();
-    GPU_time=endTime-startTime;
+    	GPU_time=endTime-startTime;
 	DestroyMMTimer(wTimerRes, init);
 
 	
