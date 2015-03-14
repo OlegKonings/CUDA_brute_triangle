@@ -319,7 +319,7 @@ __global__ void tri_last_step(int3 *combo,int *best_num,const int sz, const long
 }
 
 int main(){
-	char ch;
+
 	srand(time(NULL));
 	
 	const int num_points=NUM_ELEMENTS;
@@ -331,8 +331,7 @@ int main(){
 	generate_random_points(CPU_Arr,num_points,max_x);
 		
 	three_p CPU_ans={0},GPU_ans={0};
-	cudaError_t err=cudaDeviceReset();
-	if(err!=cudaSuccess){printf("%s in %s at line %d\n",cudaGetErrorString(err),__FILE__,__LINE__);}
+	cudaError_t err;
 	cout<<"\nRunning CPU implementation..\n";
     UINT wTimerRes = 0;
 	DWORD CPU_time=0,GPU_time=0;
@@ -421,7 +420,8 @@ int main(){
 
 
 	free(CPU_Arr);
-	//cin>>ch;
+	err=cudaDeviceReset();
+	if(err!=cudaSuccess){printf("%s in %s at line %d\n",cudaGetErrorString(err),__FILE__,__LINE__);}
 	return 0;
 }
 
