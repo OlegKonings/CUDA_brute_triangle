@@ -45,7 +45,7 @@ New Times for GTX 980 and GTX 780ti
 
 <table>
 <tr>
-    <th>Num points</th><th>Intel I-3770K 3.9 Ghz CPU time </th><th>GTX 980 time </th><th>GTX 780ti time </th>
+    <th>Number of points</th><th>Intel I-3770K 3.9 Ghz CPU time </th><th>GTX 980 time </th><th>GTX 780ti time </th>
 </tr>
     
 <tr>
