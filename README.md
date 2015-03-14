@@ -9,11 +9,13 @@ This code goes through every possible 3 point combination of a set of points, ma
 
 In this simple example case, the objective is to find which triangle of the possible set contains within its borders the greatest number of other points(exclusive). The two different CPU and GPU functions return that max number of points, and the INDEXES of the three points which created that optimal triangle.
 
+NOTE: Since the GPU version does not proceed in a serial fashion, if there is more than one combination associated with the optimal value it will return a valid combination, BUT not necessarly the same(first seen) combination the CPU version returned.  The overall answer will be correct, but a hueristic needs to be added for the CUDA version to return a specific arrangement if more than one does indeed exist.
+
 While many CUDA GPU implementations of algorithms many only be 10-100 times faster than a single core CPU implementation, this problem has a much greater difference in performance.
 
 The larger the data set of points, the greater the outperformance of the CUDA GPU implementation. For data sets of points >=400 the GPU CUDA implementation was at least 400x times faster than a 3.9 Ghz CPU implementation(including all host-device, device-device and device-host memory copies). 
 
-NOTE: no overlocking of GPU, is running at stock 706 Mhz
+No overlocking of GPU, is running at stock 706 Mhz
 
 Optimal Triangle Running Time comparison:
 ---
