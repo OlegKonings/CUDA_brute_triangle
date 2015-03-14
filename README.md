@@ -37,6 +37,23 @@ Optimal Triangle Running Time comparison:
     <td> 1300</td><td> 5,075,524 ms</td><td> 10,788 ms </td><td> 470.47x </td>
 </tr>
 </table>
+
+
+New Times for GTX 980 and GTX 780ti
+
+<table>
+<tr>
+    <th>Num points</th><th>Intel I-3770K 3.9 Ghz CPU time </th><th>GTX 980 time </th><th>GTX 780ti time </th>
+</tr>
+    
+<tr>
+    <td> 700</td><td> 411,401 ms</td><td> 716 ms </td><td> 655 ms </td>
+</tr>
+<tr>
+    <td> 1300</td><td> 5,075,524 ms</td><td> 8,422 ms </td><td> 7,720 ms </td>
+</tr>
+</table>
+
 ___
 
 The running time is apx (N choose 3)*N, where N is the number of 2-D points in the array. 
@@ -47,16 +64,16 @@ Note: Must have compute capability of 3.0 or higher to run(GTX 660 or better).
 
 AMD users, post your times and code. I would like to compare results.
 
- <script>
+<script>
   (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
   (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
   m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
   })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
 
-  ga('create', 'UA-43459430-1', 'github.com');
+  ga('create', 'UA-60172288-1', 'auto');
   ga('send', 'pageview');
 
 </script>
 
-[![githalytics.com alpha](https://cruel-carlota.pagodabox.com/8024c83bd0328155085f6a67bc179d04 "githalytics.com")](http://githalytics.com/OlegKonings/CUDA_brute_triangle)
+
 
