@@ -3,7 +3,7 @@ CUDA_brute_triangle
 
 brute force examines all possible n choose 3 triangles only once
 
-UPDATE: Optimized both implementations, so new times posted.
+UPDATE: Optimized both implementations, so new times posted.Run using the  --use_fast_math flag, and must have a GPU with compute capability >=3.5. Best performance is max_register set to 32.
 
 This code goes through every possible 3 point combination of a set of points, makes a triangle of those three points, then evalutes how many other points are within that triangle. 
 
@@ -62,9 +62,8 @@ The running time is apx (N choose 3)*N, where N is the number of 2-D points in t
 
 What makes this even more impressive is that the GPU actually has to do over 10x more work for the same answer (this is apparent in code, compare CPU version to GPU).
 
-Note: Must have compute capability of 3.0 or higher to run(GTX 660 or better).
 
-AMD users, post your times and code. I would like to compare results.
+AMD users, post your times and code. I would like to compare results. Same goes to the multi-core CPU crowd who thinks a Xeon can beat a GPU at this type of problem. Prove it ..
 
 <script>
   (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
