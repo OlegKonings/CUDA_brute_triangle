@@ -32,7 +32,6 @@ typedef long long ll;
 #define MEGA (1LL<<30)
 
 const int max_x=NUM_ELEMENTS;
-//const int max_y=NUM_ELEMENTS;
 
 const int blockSize0=8192;
 
@@ -71,7 +70,7 @@ inline long long choose3_big(int n){
 }
 	//long long nn=long long(n);
 	//return ((((nn*(nn-1LL))>>1LL)*(nn-2LL))/3LL);
-__device__ __forceinline__ int d_choose2(int n){return n>0 ? ((n*(n-1))>>1):0;}
+__device__ __forceinline__ int d_choose2(int n){return ((n*(n-1))>>1);}
 
 __device__ __forceinline__ long long d_choose3_big(int n){
 	return ((((long long(n)*(long long(n)-1LL))>>1LL)*(long long(n)-2LL))/3LL);
@@ -139,18 +138,62 @@ __global__ void _gpu_optimal_three(int3 *combo,int *best_num,const int sz){
 		}
 	}
 
-	for(ii=16;ii>0;ii>>=1){
-		mid=__shfl(thread_best,warpIndex+ii);
-		i=__shfl(cur_best.x,warpIndex+ii);
-		j=__shfl(cur_best.y,warpIndex+ii);
-		k=__shfl(cur_best.z,warpIndex+ii);
-		if(mid>thread_best){
-			thread_best=mid;
-			cur_best.x=i;
-			cur_best.y=j;
-			cur_best.z=k;
-		}
+	
+	mid=__shfl(thread_best,warpIndex+16);
+	i=__shfl(cur_best.x,warpIndex+16);
+	j=__shfl(cur_best.y,warpIndex+16);
+	k=__shfl(cur_best.z,warpIndex+16);
+	if(mid>thread_best){
+		thread_best=mid;
+		cur_best.x=i;
+		cur_best.y=j;
+		cur_best.z=k;
 	}
+
+	mid=__shfl(thread_best,warpIndex+8);
+	i=__shfl(cur_best.x,warpIndex+8);
+	j=__shfl(cur_best.y,warpIndex+8);
+	k=__shfl(cur_best.z,warpIndex+8);
+	if(mid>thread_best){
+		thread_best=mid;
+		cur_best.x=i;
+		cur_best.y=j;
+		cur_best.z=k;
+	}
+
+	mid=__shfl(thread_best,warpIndex+4);
+	i=__shfl(cur_best.x,warpIndex+4);
+	j=__shfl(cur_best.y,warpIndex+4);
+	k=__shfl(cur_best.z,warpIndex+4);
+	if(mid>thread_best){
+		thread_best=mid;
+		cur_best.x=i;
+		cur_best.y=j;
+		cur_best.z=k;
+	}
+
+	mid=__shfl(thread_best,warpIndex+2);
+	i=__shfl(cur_best.x,warpIndex+2);
+	j=__shfl(cur_best.y,warpIndex+2);
+	k=__shfl(cur_best.z,warpIndex+2);
+	if(mid>thread_best){
+		thread_best=mid;
+		cur_best.x=i;
+		cur_best.y=j;
+		cur_best.z=k;
+	}
+
+	mid=__shfl(thread_best,warpIndex+1);
+	i=__shfl(cur_best.x,warpIndex+1);
+	j=__shfl(cur_best.y,warpIndex+1);
+	k=__shfl(cur_best.z,warpIndex+1);
+	if(mid>thread_best){
+		thread_best=mid;
+		cur_best.x=i;
+		cur_best.y=j;
+		cur_best.z=k;
+	}
+	
 	if(warpIndex==0){
 		blk_best[threadIdx.x>>5]=thread_best;
 		combo_best[threadIdx.x>>5]=cur_best;
@@ -262,17 +305,59 @@ __global__ void tri_last_step(int3 *combo,int *best_num,const int sz, const long
 		adj=(long long(ii)<<8LL);
 	}
 
-	for(ii=16;ii>0;ii>>=1){
-		mid=__shfl(thread_best,warpIndex+ii);
-		i=__shfl(cur_best.x,warpIndex+ii);
-		j=__shfl(cur_best.y,warpIndex+ii);
-		k=__shfl(cur_best.z,warpIndex+ii);
-		if(mid>thread_best){
-			thread_best=mid;
-			cur_best.x=i;
-			cur_best.y=j;
-			cur_best.z=k;
-		}
+	mid=__shfl(thread_best,warpIndex+16);
+	i=__shfl(cur_best.x,warpIndex+16);
+	j=__shfl(cur_best.y,warpIndex+16);
+	k=__shfl(cur_best.z,warpIndex+16);
+	if(mid>thread_best){
+		thread_best=mid;
+		cur_best.x=i;
+		cur_best.y=j;
+		cur_best.z=k;
+	}
+
+	mid=__shfl(thread_best,warpIndex+8);
+	i=__shfl(cur_best.x,warpIndex+8);
+	j=__shfl(cur_best.y,warpIndex+8);
+	k=__shfl(cur_best.z,warpIndex+8);
+	if(mid>thread_best){
+		thread_best=mid;
+		cur_best.x=i;
+		cur_best.y=j;
+		cur_best.z=k;
+	}
+
+	mid=__shfl(thread_best,warpIndex+4);
+	i=__shfl(cur_best.x,warpIndex+4);
+	j=__shfl(cur_best.y,warpIndex+4);
+	k=__shfl(cur_best.z,warpIndex+4);
+	if(mid>thread_best){
+		thread_best=mid;
+		cur_best.x=i;
+		cur_best.y=j;
+		cur_best.z=k;
+	}
+
+	mid=__shfl(thread_best,warpIndex+2);
+	i=__shfl(cur_best.x,warpIndex+2);
+	j=__shfl(cur_best.y,warpIndex+2);
+	k=__shfl(cur_best.z,warpIndex+2);
+	if(mid>thread_best){
+		thread_best=mid;
+		cur_best.x=i;
+		cur_best.y=j;
+		cur_best.z=k;
+	}
+
+	mid=__shfl(thread_best,warpIndex+1);
+	i=__shfl(cur_best.x,warpIndex+1);
+	j=__shfl(cur_best.y,warpIndex+1);
+	k=__shfl(cur_best.z,warpIndex+1);
+	if(mid>thread_best){
+		thread_best=mid;
+		cur_best.x=i;
+		cur_best.y=j;
+		cur_best.z=k;
 	}
 
 	if(warpIndex==0){
