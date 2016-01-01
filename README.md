@@ -15,7 +15,7 @@ While many CUDA GPU implementations of algorithms many only be 10-100 times fast
 
 The larger the data set of points, the greater the outperformance of the CUDA GPU implementation. For data sets of points >=400 the GPU CUDA implementation was at least 400x times faster than a 3.9 Ghz CPU implementation(including all host-device, device-device and device-host memory copies). 
 
-No overlocking of GPU, is running at stock 706 Mhz
+No overlocking of GPU, is running at stock 706 Mhz for older Kepler Tesla K20c
 
 Optimal Triangle Running Time comparison:
 ---
